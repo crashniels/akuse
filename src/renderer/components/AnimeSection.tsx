@@ -9,6 +9,7 @@ import { useRef, useState } from 'react';
 import { ListAnimeData } from '../../types/anilistAPITypes';
 import AnimeEntry from './AnimeEntry';
 import { ButtonCircle } from './Buttons';
+import { FocusContext, useFocusable } from '@noriginmedia/norigin-spatial-navigation';
 
 interface AnimeSectionProps {
   title: string;
@@ -20,6 +21,7 @@ const AnimeSection: React.FC<AnimeSectionProps> = ({ title, animeData }) => {
   const animeListRef = useRef<HTMLDivElement>(null);
   const [enableButtons, setEnableButtons] = useState<boolean>(false);
   const [showButtons, setShowButtons] = useState<boolean>(false);
+  const { ref, focusKey } = useFocusable({ focusKey: 'MENU' });
 
   const hideButtons = () => {
     if (animeListWrapperRef.current && animeListRef.current) {
@@ -53,7 +55,7 @@ const AnimeSection: React.FC<AnimeSectionProps> = ({ title, animeData }) => {
 
   if (animeData?.length === 0) return null;
 
-  return (
+  return (<FocusContext.Provider value={focusKey}>
     <section
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -90,6 +92,7 @@ const AnimeSection: React.FC<AnimeSectionProps> = ({ title, animeData }) => {
         </div>
       </div>
     </section>
+  </FocusContext.Provider>
   );
 };
 

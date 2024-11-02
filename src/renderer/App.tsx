@@ -8,6 +8,7 @@ import Store from 'electron-store';
 import { createContext, useEffect, useState } from 'react';
 import { SkeletonTheme } from 'react-loading-skeleton';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { FocusContext, init, useFocusable, setFocus } from '@noriginmedia/norigin-spatial-navigation';
 
 import {
   getAnimeInfo,
@@ -225,7 +226,21 @@ export default function App() {
     }
   };
 
+  init({
+    debug: true,
+    visualDebug: false,
+    distanceCalculationMethod: 'center',
+    shouldFocusDOMNode: true,
+  });
+
+  const { ref, focusKey, focusSelf } = useFocusable();
+
+  useEffect(() => {
+    setFocus('MENU');
+  }, [setFocus]);
+
   return (
+    <FocusContext.Provider value={focusKey}>
     <AuthContext.Provider value={logged || hasHistory}>
       <ViewerIdContext.Provider value={viewerId}>
         <SkeletonTheme
@@ -304,5 +319,6 @@ export default function App() {
         </SkeletonTheme>
       </ViewerIdContext.Provider>
     </AuthContext.Provider>
+    </FocusContext.Provider>
   );
 }

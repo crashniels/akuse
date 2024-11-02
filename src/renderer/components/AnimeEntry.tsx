@@ -3,7 +3,7 @@ import './styles/AnimeEntry.css';
 import { faCalendar, faCircleDot } from '@fortawesome/free-regular-svg-icons';
 import { faTv } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 import {
@@ -14,6 +14,7 @@ import {
 } from '../../modules/utils';
 import { ListAnimeData } from '../../types/anilistAPITypes';
 import AnimeModal from './modals/AnimeModal';
+import { setFocus, useFocusable } from '@noriginmedia/norigin-spatial-navigation';
 
 const StatusDot: React.FC<{
   listAnimeData?: ListAnimeData | undefined;
@@ -58,15 +59,32 @@ const StatusDot: React.FC<{
 const AnimeEntry: React.FC<{
   listAnimeData?: ListAnimeData;
   onClick?: () => any;
-}> = ({ listAnimeData, onClick }) => {
+  key?: number;
+}> = ({ listAnimeData, onClick, key }) => {
   // wether the modal is shown or not
   const [showModal, setShowModal] = useState<boolean>(false);
   // wether the modal has been opened at least once (used to fetch episodes info only once when opening it)
   const [hasModalBeenShowed, setHasModalBeenShowed] = useState<boolean>(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const modalRef = useRef(null);
+  const { ref, focused } = useFocusable();
+  // Enter should trigger same as left click
+  const handleKeyEvent = (event: React.KeyboardEvent) => {
+    console.log('Component mounted or updated');
+    if ((event.code === 'Enter')) {
+      setShowModal(true);
+      if (!hasModalBeenShowed) setHasModalBeenShowed(true);
+      onblur
+    }
+  };
+  const handleMouseEvent = (event: React.MouseEvent) => {
+    setShowModal(true);
+    onClick && onClick();
+    if (!hasModalBeenShowed) setHasModalBeenShowed(true);
+    setFocus("MENU");
+  }
 
-  return (
+  return (<div tabIndex={0} onKeyDown={handleKeyEvent} ref={ref} className={focused ? 'button-focused' : 'button'}>
     <>
       {listAnimeData && hasModalBeenShowed && (
         <AnimeModal
@@ -76,14 +94,7 @@ const AnimeEntry: React.FC<{
           onClose={() => setShowModal(false)}
         />
       )}
-      <div
-        className={`anime-entry show ${listAnimeData ? '' : 'skeleton'}`}
-        onClick={() => {
-          setShowModal(true);
-          onClick && onClick();
-          if (!hasModalBeenShowed) setHasModalBeenShowed(true);
-        }}
-      >
+      <div onClick={handleMouseEvent} className={`anime-entry show ${listAnimeData ? '' : 'skeleton'}`}>
         {listAnimeData && listAnimeData.media ? (
           <div
             className="anime-cover"
@@ -150,6 +161,7 @@ const AnimeEntry: React.FC<{
         </div>
       </div>
     </>
+  </div>
   );
 };
 

@@ -140,3 +140,14 @@
   font-size: 1rem;
   font-weight: var(--font-weight);
 }
+
+.button-focused {
+  transition: transform 0.20s linear;
+  transform: scale(1.06);
+  outline: none;
+}
+
+.button-focused .anime-cover {
+  transition: transform 0.20s linear;
+  outline: 3px solid var(--font-1);
+}

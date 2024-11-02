@@ -39,6 +39,7 @@ import {
 } from './AnimeModalElements';
 import EpisodesSection from './EpisodesSection';
 import { ModalPage, ModalPageShadow } from './Modal';
+import { useFocusable } from '@noriginmedia/norigin-spatial-navigation';
 
 const modalsRoot = document.getElementById('modals-root');
 const STORE = new Store();
@@ -315,6 +316,8 @@ const AnimeModal: React.FC<AnimeModalProps> = ({
     }
   };
 
+  const { ref: focusRef, focused } = useFocusable();
+
   return ReactDOM.createPortal(
     <>
       {showPlayer && (
@@ -440,6 +443,7 @@ const AnimeModal: React.FC<AnimeModalProps> = ({
                 />
               </div>
             </div>
+            <div tabIndex={0} ref={focusRef} className={focused ? 'button-focused' : 'button'}>
             <EpisodesSection
               episodesInfo={episodesInfo}
               episodesInfoHasFetched={episodesInfoHasFetched}
@@ -469,6 +473,7 @@ const AnimeModal: React.FC<AnimeModalProps> = ({
                 ]}
               />
             )}
+            </div>
           </div>
         </div>
       </ModalPage>
